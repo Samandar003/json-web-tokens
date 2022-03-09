@@ -1,14 +1,12 @@
 from django.http import HttpResponse
-from django.shortcuts import render
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
+from users.models import User
 from .serializers import UserSerializer
 from rest_framework.response import Response
-from .models import Student
-from django.contrib.auth.models import User
-from rest_framework.exceptions import AuthenticationFailed
 
 def hello(request):
-  return HttpResponse('Hello it is me')
+  return HttpResponse('It is me')
 
 class Register(APIView):
   def post(self, request):
@@ -16,16 +14,17 @@ class Register(APIView):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data)
-
-class LoginAPIView(APIView):
-  def post(request):
+  
+class LoginView(APIView):
+  def post(self, request):
     email = request.data['email']
-    password = request.data['password']
-
+    password = request.data['password']  
     user = User.objects.filter(email=email).first()
     if user is None:
-      raise AuthenticationFailed('User not Found')
+      raise AuthenticationFailed('User note found')
     if not user.check_password(password):
-      raise AuthenticationFailed('Incorrect                                                                                                                                                                                                                                                                                                                                                               n ')
-      
+      raise AuthenticationFailed('Incorrect password')
+    return Response({
+        "message":"success"
+      })
     
